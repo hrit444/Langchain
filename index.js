@@ -1,5 +1,6 @@
 import {config} from "dotenv"
 import { ChatGoogle } from "@langchain/google";
+import { PromptTemplate } from "@langchain/core/prompts";
 
 config()
 
@@ -8,6 +9,14 @@ const model = new ChatGoogle({
   model: "gemini-2.5-flash",
 });
 
-const res = await model.invoke("who are you ?");
+const promptTemplate = PromptTemplate.fromTemplate(
+  `Explain {topic} in simple terms (ELI5 style).
+Cover only the core concepts. Be brief and direct.`
+)
 
-console.log(res);
+const chain = promptTemplate.pipe(model)
+
+chain.invoke({topic: "node"})
+.then(response => {
+  console.log(response)
+})
